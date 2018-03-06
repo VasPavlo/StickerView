@@ -3,3 +3,8 @@
 ################################################################################
 
 /.vs/StickerViewExample/v15/Server/sqlite3
+/packages/Xamarin.Android.Support.v4.23.1.1.0/lib/MonoAndroid403
+/packages/Xamarin.Android.Support.v4.23.1.1.0
+/packages/Xamarin.Android.Support.v7.AppCompat.23.1.1.0
+/StickerViewExample/bin/Debug
+/StickerViewExample/obj

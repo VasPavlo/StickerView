@@ -1,0 +1,14 @@
+﻿<Properties StartupConfiguration="{17280430-EFD3-43E0-86D2-8E771CA7E7C0}|Default">
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore />
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MonoDevelop.Ide.Workbench ActiveDocument="StickerViewExample\StickerView\Sticker.cs">
+    <Files>
+      <File FileName="StickerViewExample\StickerView\Sticker.cs" Line="19" Column="9" />
+    </Files>
+  </MonoDevelop.Ide.Workbench>
+  <MultiItemStartupConfigurations />
+  <MonoDevelop.Ide.ItemProperties.StickerViewExample PreferredExecutionTarget="Android.192.168.0.101:5555" />
+</Properties>

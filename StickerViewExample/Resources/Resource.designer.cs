@@ -1411,19 +1411,49 @@ namespace StickerViewExample
 			public const int abc_textfield_search_material = 2130837572;
 			
 			// aapt resource value: 0x7f020045
-			public const int c10 = 2130837573;
+			public const int bg_scene = 2130837573;
 			
 			// aapt resource value: 0x7f020046
-			public const int flip = 2130837574;
-			
-			// aapt resource value: 0x7f020049
-			public const int notification_template_icon_bg = 2130837577;
+			public const int c10 = 2130837574;
 			
 			// aapt resource value: 0x7f020047
-			public const int remove = 2130837575;
+			public const int flip = 2130837575;
 			
 			// aapt resource value: 0x7f020048
-			public const int zoominout = 2130837576;
+			public const int ic_avatar_1 = 2130837576;
+			
+			// aapt resource value: 0x7f020049
+			public const int ic_avatar_2 = 2130837577;
+			
+			// aapt resource value: 0x7f02004a
+			public const int ic_avatar_3 = 2130837578;
+			
+			// aapt resource value: 0x7f02004b
+			public const int ic_image = 2130837579;
+			
+			// aapt resource value: 0x7f02004c
+			public const int ic_launcher = 2130837580;
+			
+			// aapt resource value: 0x7f02004d
+			public const int ic_mirror = 2130837581;
+			
+			// aapt resource value: 0x7f02004e
+			public const int ic_remove = 2130837582;
+			
+			// aapt resource value: 0x7f02004f
+			public const int ic_resize = 2130837583;
+			
+			// aapt resource value: 0x7f020050
+			public const int ic_rotate = 2130837584;
+			
+			// aapt resource value: 0x7f020053
+			public const int notification_template_icon_bg = 2130837587;
+			
+			// aapt resource value: 0x7f020051
+			public const int remove = 2130837585;
+			
+			// aapt resource value: 0x7f020052
+			public const int zoominout = 2130837586;
 			
 			static Drawable()
 			{
@@ -1438,8 +1468,8 @@ namespace StickerViewExample
 		public partial class Id
 		{
 			
-			// aapt resource value: 0x7f0c0051
-			public const int action0 = 2131492945;
+			// aapt resource value: 0x7f0c0058
+			public const int action0 = 2131492952;
 			
 			// aapt resource value: 0x7f0c0041
 			public const int action_bar = 2131492929;
@@ -1465,8 +1495,8 @@ namespace StickerViewExample
 			// aapt resource value: 0x7f0c0042
 			public const int action_context_bar = 2131492930;
 			
-			// aapt resource value: 0x7f0c0055
-			public const int action_divider = 2131492949;
+			// aapt resource value: 0x7f0c005c
+			public const int action_divider = 2131492956;
 			
 			// aapt resource value: 0x7f0c0002
 			public const int action_menu_divider = 2131492866;
@@ -1498,17 +1528,17 @@ namespace StickerViewExample
 			// aapt resource value: 0x7f0c002b
 			public const int buttonPanel = 2131492907;
 			
-			// aapt resource value: 0x7f0c0052
-			public const int cancel_action = 2131492946;
+			// aapt resource value: 0x7f0c0059
+			public const int cancel_action = 2131492953;
 			
-			// aapt resource value: 0x7f0c0050
-			public const int canvasView = 2131492944;
+			// aapt resource value: 0x7f0c0057
+			public const int canvasView = 2131492951;
 			
 			// aapt resource value: 0x7f0c0039
 			public const int checkbox = 2131492921;
 			
-			// aapt resource value: 0x7f0c0058
-			public const int chronometer = 2131492952;
+			// aapt resource value: 0x7f0c005f
+			public const int chronometer = 2131492959;
 			
 			// aapt resource value: 0x7f0c001c
 			public const int collapseActionView = 2131492892;
@@ -1537,14 +1567,17 @@ namespace StickerViewExample
 			// aapt resource value: 0x7f0c0019
 			public const int end = 2131492889;
 			
-			// aapt resource value: 0x7f0c005d
-			public const int end_padder = 2131492957;
+			// aapt resource value: 0x7f0c0064
+			public const int end_padder = 2131492964;
 			
 			// aapt resource value: 0x7f0c0025
 			public const int expand_activities_button = 2131492901;
 			
 			// aapt resource value: 0x7f0c0038
 			public const int expanded_menu = 2131492920;
+			
+			// aapt resource value: 0x7f0c0051
+			public const int gv = 2131492945;
 			
 			// aapt resource value: 0x7f0c0004
 			public const int home = 2131492868;
@@ -1561,14 +1594,20 @@ namespace StickerViewExample
 			// aapt resource value: 0x7f0c0026
 			public const int image = 2131492902;
 			
-			// aapt resource value: 0x7f0c005c
-			public const int info = 2131492956;
+			// aapt resource value: 0x7f0c0063
+			public const int info = 2131492963;
+			
+			// aapt resource value: 0x7f0c0050
+			public const int iv_preview = 2131492944;
 			
 			// aapt resource value: 0x7f0c0056
-			public const int line1 = 2131492950;
+			public const int iv_sticker = 2131492950;
 			
-			// aapt resource value: 0x7f0c005a
-			public const int line3 = 2131492954;
+			// aapt resource value: 0x7f0c005d
+			public const int line1 = 2131492957;
+			
+			// aapt resource value: 0x7f0c0061
+			public const int line3 = 2131492961;
 			
 			// aapt resource value: 0x7f0c0009
 			public const int listMode = 2131492873;
@@ -1576,8 +1615,8 @@ namespace StickerViewExample
 			// aapt resource value: 0x7f0c0028
 			public const int list_item = 2131492904;
 			
-			// aapt resource value: 0x7f0c0054
-			public const int media_actions = 2131492948;
+			// aapt resource value: 0x7f0c005b
+			public const int media_actions = 2131492955;
 			
 			// aapt resource value: 0x7f0c001a
 			public const int middle = 2131492890;
@@ -1678,8 +1717,11 @@ namespace StickerViewExample
 			// aapt resource value: 0x7f0c0017
 			public const int src_over = 2131492887;
 			
-			// aapt resource value: 0x7f0c0053
-			public const int status_bar_latest_event_content = 2131492947;
+			// aapt resource value: 0x7f0c005a
+			public const int status_bar_latest_event_content = 2131492954;
+			
+			// aapt resource value: 0x7f0c0055
+			public const int sticker_layout = 2131492949;
 			
 			// aapt resource value: 0x7f0c004c
 			public const int submit_area = 2131492940;
@@ -1687,17 +1729,17 @@ namespace StickerViewExample
 			// aapt resource value: 0x7f0c000b
 			public const int tabMode = 2131492875;
 			
-			// aapt resource value: 0x7f0c005b
-			public const int text = 2131492955;
+			// aapt resource value: 0x7f0c0062
+			public const int text = 2131492962;
 			
-			// aapt resource value: 0x7f0c0059
-			public const int text2 = 2131492953;
+			// aapt resource value: 0x7f0c0060
+			public const int text2 = 2131492960;
 			
 			// aapt resource value: 0x7f0c0034
 			public const int textSpacerNoButtons = 2131492916;
 			
-			// aapt resource value: 0x7f0c0057
-			public const int time = 2131492951;
+			// aapt resource value: 0x7f0c005e
+			public const int time = 2131492958;
 			
 			// aapt resource value: 0x7f0c002a
 			public const int title = 2131492906;
@@ -1707,6 +1749,15 @@ namespace StickerViewExample
 			
 			// aapt resource value: 0x7f0c002e
 			public const int topPanel = 2131492910;
+			
+			// aapt resource value: 0x7f0c0053
+			public const int tv_add_sticker = 2131492947;
+			
+			// aapt resource value: 0x7f0c0054
+			public const int tv_generate_preview = 2131492948;
+			
+			// aapt resource value: 0x7f0c0052
+			public const int tv_get_preview = 2131492946;
 			
 			// aapt resource value: 0x7f0c0008
 			public const int up = 2131492872;
@@ -1837,43 +1888,55 @@ namespace StickerViewExample
 			public const int abc_select_dialog_material = 2130968600;
 			
 			// aapt resource value: 0x7f040019
-			public const int Main = 2130968601;
+			public const int activity_preview = 2130968601;
 			
 			// aapt resource value: 0x7f04001a
-			public const int notification_media_action = 2130968602;
+			public const int activity_sticker_selector = 2130968602;
 			
 			// aapt resource value: 0x7f04001b
-			public const int notification_media_cancel_action = 2130968603;
+			public const int activity_sticker_view = 2130968603;
 			
 			// aapt resource value: 0x7f04001c
-			public const int notification_template_big_media = 2130968604;
+			public const int item_sticker = 2130968604;
 			
 			// aapt resource value: 0x7f04001d
-			public const int notification_template_big_media_narrow = 2130968605;
+			public const int Main = 2130968605;
 			
 			// aapt resource value: 0x7f04001e
-			public const int notification_template_lines = 2130968606;
+			public const int notification_media_action = 2130968606;
 			
 			// aapt resource value: 0x7f04001f
-			public const int notification_template_media = 2130968607;
+			public const int notification_media_cancel_action = 2130968607;
 			
 			// aapt resource value: 0x7f040020
-			public const int notification_template_part_chronometer = 2130968608;
+			public const int notification_template_big_media = 2130968608;
 			
 			// aapt resource value: 0x7f040021
-			public const int notification_template_part_time = 2130968609;
+			public const int notification_template_big_media_narrow = 2130968609;
 			
 			// aapt resource value: 0x7f040022
-			public const int select_dialog_item_material = 2130968610;
+			public const int notification_template_lines = 2130968610;
 			
 			// aapt resource value: 0x7f040023
-			public const int select_dialog_multichoice_material = 2130968611;
+			public const int notification_template_media = 2130968611;
 			
 			// aapt resource value: 0x7f040024
-			public const int select_dialog_singlechoice_material = 2130968612;
+			public const int notification_template_part_chronometer = 2130968612;
 			
 			// aapt resource value: 0x7f040025
-			public const int support_simple_spinner_dropdown_item = 2130968613;
+			public const int notification_template_part_time = 2130968613;
+			
+			// aapt resource value: 0x7f040026
+			public const int select_dialog_item_material = 2130968614;
+			
+			// aapt resource value: 0x7f040027
+			public const int select_dialog_multichoice_material = 2130968615;
+			
+			// aapt resource value: 0x7f040028
+			public const int select_dialog_singlechoice_material = 2130968616;
+			
+			// aapt resource value: 0x7f040029
+			public const int support_simple_spinner_dropdown_item = 2130968617;
 			
 			static Layout()
 			{
@@ -1889,7 +1952,40 @@ namespace StickerViewExample
 		{
 			
 			// aapt resource value: 0x7f030000
-			public const int Icon = 2130903040;
+			public const int bg_scene = 2130903040;
+			
+			// aapt resource value: 0x7f030001
+			public const int ic_avatar_1 = 2130903041;
+			
+			// aapt resource value: 0x7f030002
+			public const int ic_avatar_2 = 2130903042;
+			
+			// aapt resource value: 0x7f030003
+			public const int ic_avatar_3 = 2130903043;
+			
+			// aapt resource value: 0x7f030004
+			public const int ic_image = 2130903044;
+			
+			// aapt resource value: 0x7f030005
+			public const int ic_mirror = 2130903045;
+			
+			// aapt resource value: 0x7f030006
+			public const int ic_remove = 2130903046;
+			
+			// aapt resource value: 0x7f030007
+			public const int ic_resize = 2130903047;
+			
+			// aapt resource value: 0x7f030008
+			public const int ic_rotate = 2130903048;
+			
+			// aapt resource value: 0x7f030009
+			public const int Icon = 2130903049;
+			
+			// aapt resource value: 0x7f03000a
+			public const int remove = 2130903050;
+			
+			// aapt resource value: 0x7f03000b
+			public const int zoominout = 2130903051;
 			
 			static Mipmap()
 			{

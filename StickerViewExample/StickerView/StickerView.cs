@@ -1,396 +1,252 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+
+using Android.App;
 using Android.Content;
-using Android.Content.Res;
 using Android.Graphics;
+using Android.OS;
+using Android.Runtime;
+using Android.Support.V4.View;
 using Android.Util;
 using Android.Views;
 using Android.Widget;
+using StickerViewExample.Utils;
 
-namespace StickerViewExample
+namespace StickerViewExample.StickerView
 {
-	public abstract class StickerView : FrameLayout, View.IOnTouchListener
+	public class StickerView : ImageView
 	{
-
-		public static String TAG = "com.knef.stickerView";
-		private BorderView iv_border;
-		private ImageView iv_scale;
-		private ImageView iv_delete;
-		private ImageView iv_flip;
-
-		// For scalling
-		private float this_orgX = -1, this_orgY = -1;
-		private float scale_orgX = -1, scale_orgY = -1;
-		private double scale_orgWidth = -1, scale_orgHeight = -1;
-		// For rotating
-		private float rotate_orgX = -1, rotate_orgY = -1, rotate_newX = -1, rotate_newY = -1;
-		// For moving
-		private float move_orgX = -1, move_orgY = -1;
-
-		private double centerX, centerY;
-
-		private static int BUTTON_SIZE_DP = 30;
-		private static int SELF_SIZE_DP = 100;
+		private Context context;		
+		private Sticker sticker;		
+		private Matrix downMatrix = new Matrix();		
+		private Matrix moveMatrix = new Matrix();		
+		private PointF midPoint = new PointF();		
+		private PointF imageMidPoint = new PointF();		
+		private StickerActionIcon rotateIcon;		
+		private StickerActionIcon zoomIcon;		
+		private StickerActionIcon removeIcon;		
+		private Paint paintEdge;
+		
+		private int mode;		
+		private bool isEdit = true;		
+		private OnStickerActionListener listener;
 
 
-		public StickerView(Context context) : base(context)
+		public void setOnStickerActionListener(OnStickerActionListener listener)
 		{
+			this.listener = listener;
+		}
+
+		public StickerView(Context context): this(context, null)
+		{		 
+		}
+
+		public StickerView(Context context, IAttributeSet attrs) : this(context, attrs, 0)
+		{			
+		}
+
+		public StickerView(Context context, IAttributeSet attrs, int defStyleAttr ) : base (context, attrs, defStyleAttr)
+		{			
 			Init(context);
 		}
 
-		public StickerView(Context context, IAttributeSet attrs) : base(context, attrs)
+		private void Init(Context context)
 		{
-
-			Init(context);
+			this.context = context;
+			SetScaleType(ScaleType.Matrix);
+			rotateIcon = new StickerActionIcon(context);
+			zoomIcon = new StickerActionIcon(context);
+			removeIcon = new StickerActionIcon(context);
+			paintEdge = new Paint();
+			paintEdge.Color =Color.Black;
+			paintEdge.Alpha =170;
+			paintEdge.AntiAlias = true;
 		}
 
-		public StickerView(Context context, IAttributeSet attrs, int defStyle) : base(context, attrs, defStyle)
+
+		protected override void OnLayout(bool changed, int left, int top, int right, int bottom)
 		{
-			Init(context);
-		}
+			base.OnLayout(changed, left, top, right, bottom);
 
-		void Init(Context context)
-		{
-			iv_border = new BorderView(context);
-			iv_scale = new ImageView(context);
-			iv_delete = new ImageView(context);
-			iv_flip = new ImageView(context);
-
-			iv_scale.SetImageResource(Resource.Drawable.zoominout);
-			iv_delete.SetImageResource(Resource.Drawable.remove);
-			iv_flip.SetImageResource(Resource.Drawable.flip);
-
-			Tag = "DraggableViewGroup";
-			iv_border.Tag = "iv_border";
-			iv_scale.Tag = "iv_scale";
-			iv_delete.Tag = "iv_delete";
-			iv_flip.Tag = "iv_flip";
-
-			int margin = ConvertDpToPixel(BUTTON_SIZE_DP, Context) / 2;
-			int size = ConvertDpToPixel(SELF_SIZE_DP, Context);
-
-			LayoutParams this_params =
-			   new LayoutParams(
-					   size,
-					   size
-			   );
-			this_params.Gravity = GravityFlags.Center;
-
-			LayoutParams iv_main_params =
-			   new LayoutParams(
-					   ViewGroup.LayoutParams.MatchParent,
-					   ViewGroup.LayoutParams.MatchParent
-			   );
-			iv_main_params.SetMargins(margin, margin, margin, margin);
-
-
-
-			LayoutParams iv_border_params =
-			   new LayoutParams(
-					   ViewGroup.LayoutParams.MatchParent,
-					   ViewGroup.LayoutParams.MatchParent
-			   );
-			iv_border_params.SetMargins(margin, margin, margin, margin);
-
-			LayoutParams iv_scale_params =
-					new LayoutParams(
-							ConvertDpToPixel(BUTTON_SIZE_DP, Context),
-							ConvertDpToPixel(BUTTON_SIZE_DP, Context)
-					);
-
-
-			iv_scale_params.Gravity = GravityFlags.Bottom | GravityFlags.Right;
-
-			LayoutParams iv_delete_params =
-					new LayoutParams(
-							ConvertDpToPixel(BUTTON_SIZE_DP, Context),
-							ConvertDpToPixel(BUTTON_SIZE_DP, Context)
-					);
-			iv_delete_params.Gravity = GravityFlags.Top | GravityFlags.Right;
-
-			LayoutParams iv_flip_params =
-					new LayoutParams(
-							ConvertDpToPixel(BUTTON_SIZE_DP, Context),
-							ConvertDpToPixel(BUTTON_SIZE_DP, Context)
-					);
-			iv_flip_params.Gravity = GravityFlags.Top | GravityFlags.Left;
-
-
-			this.LayoutParameters = this_params;
-			this.AddView(GetMainView(), iv_main_params);
-			this.AddView(iv_border, iv_border_params);
-			this.AddView(iv_scale, iv_scale_params);
-			this.AddView(iv_delete, iv_delete_params);
-			this.AddView(iv_flip, iv_flip_params);
-			this.SetOnTouchListener(this);
-			this.iv_scale.SetOnTouchListener(this);
-			this.iv_delete.Click+=(svm,e) =>
+			if (changed)
 			{
-				if (Parent != null)
-				{
-					ViewGroup myCanvas = ((ViewGroup)Parent);
-					myCanvas.RemoveView(this);
-				}
-			};
-
-			this.iv_flip.Click += (dwd, wd) => 
-			{
-				Log.Verbose(TAG, "flip the view");
-
-				View mainView = GetMainView();
-				mainView.RotationY = (mainView.RotationY == -180f ? 0f : -180f);
-				mainView.Invalidate();
-				RequestLayout();
-			};
-		}
-
-		public bool isFlip()
-		{
-			return GetMainView().RotationY == -180f;
-		}
-
-
-		protected abstract View GetMainView();
-
-		private static int ConvertDpToPixel(float dp, Context context)
-		{
-			Resources resources = context.Resources;
-			DisplayMetrics metrics = resources.DisplayMetrics;
-			float px = dp * ((int)metrics.DensityDpi / 160f);
-			return (int)px;
-		}
-
-		private double GetLength(double x1, double y1, double x2, double y2)
-		{
-			return Math.Sqrt(Math.Pow(y2 - y1, 2) + Math.Pow(x2 - x1, 2));
-		}
-
-
-		public bool OnTouch(View view, MotionEvent e)
-		{
-			if (view.Tag.Equals("DraggableViewGroup"))
-			{
-				switch (e.Action)
-				{
-					case MotionEventActions.Down:
-						Log.Verbose(TAG, "sticker view action down");
-						move_orgX = e.RawX;
-						move_orgY = e.RawY;
-						break;
-					case MotionEventActions.Move:
-						Log.Verbose(TAG, "sticker view action move");
-
-						float offsetX = e.RawX - move_orgX;
-
-						float offsetY = e.RawY - move_orgY;
-						this.SetX(this.GetX() + offsetX);
-						this.SetY(this.GetY() + offsetY);
-						move_orgX = e.RawX;
-						move_orgY = e.RawY;
-						break;
-					case MotionEventActions.Up:
-						Log.Verbose(TAG, "sticker view action up");
-						break;
-				}
+				sticker.getMatrix().PostTranslate((Width - sticker.getStickerWidth()) / 2, (Height - sticker.getStickerHeight()) / 2);
 			}
-			else
-				if (view.Tag.Equals("iv_scale"))
+		}
+
+		private bool isInStickerArea(Sticker sticker, MotionEvent e) 
+		{
+			RectF dst = sticker.getSrcImageBound();
+			return dst.Contains(e.GetX(), e.GetY());
+		}
+
+	protected override void OnDraw(Canvas canvas)
+		{
+			if (sticker == null) return;
+			sticker.draw(canvas);
+			float[] points = PointUtils.GetBitmapPoints(sticker.getSrcImage(), sticker.getMatrix());
+			float x1 = points[0];
+			float y1 = points[1];
+			float x2 = points[2];
+			float y2 = points[3];
+			float x3 = points[4];
+			float y3 = points[5];
+			float x4 = points[6];
+			float y4 = points[7];
+			if (isEdit)
 			{
-				switch (e.Action)
-				{
-					case MotionEventActions.Down:
-						Log.Verbose(TAG, "iv_scale action down");
+				canvas.DrawLine(x1, y1, x2, y2, paintEdge);
+				canvas.DrawLine(x2, y2, x4, y4, paintEdge);
+				canvas.DrawLine(x4, y4, x3, y3, paintEdge);
+				canvas.DrawLine(x3, y3, x1, y1, paintEdge);
+				
+				rotateIcon.draw(canvas, x2, y2);
+				zoomIcon.draw(canvas, x3, y3);
+				removeIcon.draw(canvas, x1, y1);
+			}
+		}
+		
+		private float downX;
+		private float downY;
+		private float oldDistance;
+		private float oldRotation;
 
-						this_orgX = GetX();
-						this_orgY = GetY();
-
-						scale_orgX = e.RawX;
-						scale_orgY = e.RawY;
-						scale_orgWidth = this.LayoutParameters.Width;
-						scale_orgHeight = this.LayoutParameters.Height;
-
-						rotate_orgX = e.RawX;
-						rotate_orgY = e.RawY;
-
-						centerX = this.GetX() +
-									  ((View)this.Parent).GetX() +
-								(float)this.Width / 2;
-
-
-						//double statusBarHeight = Math.ceil(25 * getContext().getResources().getDisplayMetrics().density);
-						int result = 0;
-						int resourceId = Resources.GetIdentifier("status_bar_height", "dimen", "android");
-						if (resourceId > 0)
+		public override bool OnTouchEvent(MotionEvent e)
+		{
+			//return base.OnTouchEvent(e);
+			int action = MotionEventCompat.GetActionMasked(e);
+			bool isStickerOnEdit = true;
+        switch (action) {
+            case (int)MotionEventActions.Down:
+                downX = e.GetX();
+                downY = e.GetY();
+                if (sticker == null) return false;                
+                if (removeIcon.isInActionCheck(e))
+					{
+						if (listener != null)
 						{
-							result = Resources.GetDimensionPixelSize(resourceId);
+							listener.onDelete(this);
 						}
-						double statusBarHeight = result;
-						centerY = this.GetY() +
-							((View)Parent).GetY() +
-							statusBarHeight +
-									  (float)this.Height / 2;
-
-						break;
-					case MotionEventActions.Move:
-						Log.Verbose(TAG, "iv_scale action move");
-
-						rotate_newX = e.RawX;
-						rotate_newY = e.RawY;
-
-						double angle_diff = Math.Abs(
-							Math.Atan2(e.RawY - scale_orgY, e.RawX - scale_orgX)
-								- Math.Atan2(scale_orgY - centerY, scale_orgX - centerX)) * 180 / Math.PI;
-
-						Log.Verbose(TAG, "angle_diff: " + angle_diff);
-
-						double length1 = GetLength(centerX, centerY, scale_orgX, scale_orgY);
-						double length2 = GetLength(centerX, centerY, e.RawX, e.RawY);
-
-						int size = ConvertDpToPixel(SELF_SIZE_DP, Context);
-						if (length2 > length1
-							&& (angle_diff < 25 || Math.Abs(angle_diff - 180) < 25)
-							)
-						{
-							//scale up
-							double offsetX = Math.Abs(e.RawX - scale_orgX);
-							double offsetY = Math.Abs(e.RawY - scale_orgY);
-							double offset = Math.Max(offsetX, offsetY);
-							offset = Math.Round(offset);
-							this.LayoutParameters.Width += (int)offset;
-							this.LayoutParameters.Height += (int)offset;
-							OnScaling(true);
-							//DraggableViewGroup.this.setX((float) (getX() - offset / 2));
-							//DraggableViewGroup.this.setY((float) (getY() - offset / 2));
-						}
-						else if (length2 < length1
-									   && (angle_diff < 25 || Math.Abs(angle_diff - 180) < 25)
-								 && this.LayoutParameters.Width > size / 2
-								 && this.LayoutParameters.Height > size / 2)
-						{
-							//scale down
-							double offsetX = Math.Abs(e.RawX - scale_orgX);
-							double offsetY = Math.Abs(e.RawY - scale_orgY);
-							double offset = Math.Max(offsetX, offsetY);
-							offset = Math.Round(offset);
-							this.LayoutParameters.Width -= (int)offset;
-							this.LayoutParameters.Height -= (int)offset;
-							OnScaling(false);
-						}
-
-						//rotate
-
-						double angle = Math.Atan2(e.RawY - centerY, e.RawX - centerX) * 180 / Math.PI;
-						Log.Verbose(TAG, "log angle: " + angle);
-
-						//setRotation((float) angle - 45);
-						Rotation = ((float)angle - 45);
-						Log.Verbose(TAG, "getRotation(): " + Rotation);
-
-						OnRotating();
-
-						rotate_orgX = rotate_newX;
-						rotate_orgY = rotate_newY;
-
-						scale_orgX = e.RawX;
-						scale_orgY = e.RawY;
-
-						PostInvalidate();
-						RequestLayout();
-
-						break;
-					case MotionEventActions.Up:
-						Log.Verbose(TAG, "iv_scale action up");
-						break;
-				}
+					}                
+					else if (rotateIcon.isInActionCheck(e))
+					{
+						mode = (int)ActionMode.ROTATE;
+						downMatrix.Set(sticker.getMatrix());
+						imageMidPoint = sticker.getImageMidPoint(downMatrix);
+						oldRotation = sticker.getSpaceRotation(e, imageMidPoint);
+						Log.Debug("onTouchEvent", "Rotate gesture");
+					}                
+                else if (zoomIcon.isInActionCheck(e))
+					{
+						mode = (int)ActionMode.ZOOM_SINGLE;
+						downMatrix.Set(sticker.getMatrix());
+						imageMidPoint = sticker.getImageMidPoint(downMatrix);
+						oldDistance = sticker.getSingleTouchDistance(e, imageMidPoint);
+						Log.Debug("onTouchEvent", "Single point zoom gesture");
+					}
+                
+                else if (isInStickerArea(sticker, e))
+					{
+						mode = (int)ActionMode.TRANS;
+						downMatrix.Set(sticker.getMatrix());
+						Log.Debug("onTouchEvent", "Pan gesture");
+					}
+				else
+					{
+						isStickerOnEdit = false;
+					}
+					break;
+            case (int)MotionEventActions.PointerDown: 
+                mode = (int)ActionMode.ZOOM_MULTI;
+				oldDistance = sticker.getMultiTouchDistance(e);
+				midPoint = sticker.getMidPoint(e);
+				downMatrix.Set(sticker.getMatrix());
+				break;
+            case (int) MotionEventActions.Move:                
+                if (mode == (int)ActionMode.ROTATE)
+					{
+						moveMatrix.Set(downMatrix);
+						float deltaRotation = sticker.getSpaceRotation(e, imageMidPoint) - oldRotation;
+						moveMatrix.PostRotate(deltaRotation, imageMidPoint.X, imageMidPoint.Y);
+						sticker.getMatrix().Set(moveMatrix);
+						Invalidate();					
+					}	
+			else if (mode == (int)ActionMode.ZOOM_SINGLE)
+					{
+						moveMatrix.Set(downMatrix);
+						float scale = sticker.getSingleTouchDistance(e, imageMidPoint) / oldDistance;
+						moveMatrix.PostScale(scale, scale, imageMidPoint.X, imageMidPoint.Y);
+						sticker.getMatrix().Set(moveMatrix);
+						Invalidate();
+					}
+			else if (mode == (int)ActionMode.ZOOM_MULTI)
+					{
+						moveMatrix.Set(downMatrix);
+						float scale = sticker.getMultiTouchDistance(e) / oldDistance;
+						moveMatrix.PostScale(scale, scale, midPoint.X, midPoint.Y);
+						sticker.getMatrix().Set(moveMatrix);
+						Invalidate();
+					}
+			else if (mode == (int) ActionMode.TRANS)
+					{
+						moveMatrix.Set(downMatrix);
+						moveMatrix.PostTranslate(e.GetX() - downX, e.GetY() - downY);
+						sticker.getMatrix().Set(moveMatrix);
+						Invalidate();
+					}
+					break;
+            case (int) MotionEventActions.PointerUp:
+            case (int) MotionEventActions.Up:
+                mode = (int) ActionMode.NONE;
+				midPoint = null;
+				imageMidPoint = null;
+				break;
+			default:
+                break;
 			}
-			return true;
-		}
-
-		protected override void OnDraw(Canvas canvas)
-		{
-			base.OnDraw(canvas);
-		}
-
-		private float[] GetRelativePos(float absX, float absY)
-		{
-			Log.Verbose("ken", "getRelativePos getX:" + ((View)Parent).GetX());
-			Log.Verbose("ken", "getRelativePos getY:" + ((View)Parent).GetY());
-			float[] pos = new float[]{
-				absX-((View)Parent).GetX(),
-				absY-((View)Parent).GetY()
-		};
-			Log.Verbose(TAG, "getRelativePos absY:" + absY);
-			Log.Verbose(TAG, "getRelativePos relativeY:" + pos[1]);
-			return pos;
-		}
-
-		public void SetControlItemsHidden(bool isHidden)
-		{
-			if (isHidden)
+			if (isStickerOnEdit && listener != null)
 			{
-				iv_border.Visibility = ViewStates.Invisible;
-				iv_scale.Visibility = ViewStates.Invisible;
-				iv_delete.Visibility = ViewStates.Invisible;
-				iv_flip.Visibility = ViewStates.Invisible;
+				listener.onEdit(this);
 			}
-			else
-			{
-				iv_border.Visibility = ViewStates.Visible;
-				iv_scale.Visibility = ViewStates.Visible;
-				iv_delete.Visibility = ViewStates.Visible;
-				iv_flip.Visibility = ViewStates.Visible;
-			}
+				return isStickerOnEdit;
 		}
 
-		protected View GetImageViewFlip()
-		{
-			return iv_flip;
-		}
-		protected void OnScaling(bool scaleUp) { }
-
-		protected void OnRotating() { }
-	}
-
-
-
-
-	internal class BorderView : View
-	{
-
-		public BorderView(Context context) : base(context)
-		{
-
+		public override void SetImageResource(int resId)
+		{			
+			sticker = new Sticker(BitmapFactory.DecodeResource(context.Resources, resId));
 		}
 
-		public BorderView(Context context, IAttributeSet attrs) : base(context, attrs)
+		public Sticker getSticker()
 		{
-
+			return sticker;
 		}
 
-		public BorderView(Context context, IAttributeSet attrs, int defStyle) : base(context, attrs, defStyle)
-		{
-
+		public override void SetImageBitmap(Bitmap bm)
+		{			
+			sticker = new Sticker(bm);
 		}
 
-		protected override void OnDraw(Android.Graphics.Canvas canvas)
+		public void setEdit(bool edit)
 		{
-			base.OnDraw(canvas);
+			isEdit = edit;
+			PostInvalidate();
+		}
+		public void setRotateRes(int rotateRes)
+		{
+			rotateIcon.setSrcIcon(rotateRes);
+		}
 
-			var pars = (FrameLayout.LayoutParams)this.LayoutParameters;
+		public void setZoomRes(int zoomRes)
+		{
+			zoomIcon.setSrcIcon(zoomRes);
+		}
 
-			Log.Verbose("com.knef.stickerView", "params.leftMargin: " + pars.LeftMargin);
-
-			Rect border = new Rect();
-			border.Left = (int)this.Left - pars.LeftMargin;
-			border.Top = (int)this.Top - pars.TopMargin;
-			border.Right = (int)this.Right - pars.RightMargin;
-			border.Bottom = (int)this.Bottom - pars.BottomMargin;
-			Paint borderPaint = new Paint();
-			borderPaint.StrokeWidth = 6;
-			borderPaint.Color = Color.White;
-			borderPaint.SetStyle(Paint.Style.Stroke);
-			canvas.DrawRect(border, borderPaint);
+		public void setRemoveRes(int removeRes)
+		{
+			removeIcon.setSrcIcon(removeRes);
 		}
 
 	}
-
 }
